@@ -48,7 +48,7 @@
 
 	$debug = 0;
 
-	$cached_data = $db->query('SELECT ' . $var_sql . ',DATE FROM cache DESC WHERE _ROWID_ % ' . $detail . ' = 0 ORDER BY DATE DESC LIMIT 25');
+	$cached_data = $db->query('SELECT ' . $var_sql . ',DATE FROM cache DESC WHERE _ROWID_ % ' . $detail . ' = 0 ORDER BY DATE DESC LIMIT 35');
 
 	$cache_amount = 0;
 	while($content = $cached_data->fetchArray(SQLITE3_BOTH)) {
