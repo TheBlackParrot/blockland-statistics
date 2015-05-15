@@ -48,16 +48,32 @@
 
 	$debug = 0;
 
-	$cached_data = $db->query('SELECT ' . $var_sql . ',DATE FROM cache DESC WHERE _ROWID_ % ' . $detail . ' = 0 ORDER BY DATE DESC LIMIT 35');
+	//$cached_data = $db->query('SELECT ' . $var_sql . ',DATE FROM cache DESC WHERE _ROWID_ % ' . $detail . ' = 0 ORDER BY DATE DESC LIMIT 35');
+	$cached_data = $db->query('SELECT ' . $var_sql . ',DATE FROM cache ORDER BY DATE DESC LIMIT ' . 35*$detail);
 
 	$cache_amount = 0;
+	$value_sum = 0;
+	$offset = 0;
 	while($content = $cached_data->fetchArray(SQLITE3_BOTH)) {
-		if(!$content[$var_sql]) {
-			$data['values'][] = VOID;
+		$value_sum += $content[$var_sql];
+		if($detail > 1) {
+			if(!$content[$var_sql]) {
+				$offset++;
+			}
+			if($cache_amount % $detail == ($detail-1)) {
+				$data['values'][] = floor($value_sum/($detail-$offset));
+				$data['dates'][] = date("n/j\r\nH:i",$content['DATE']);
+				$offset = 0;
+				$value_sum = 0;
+			}
 		} else {
-			$data['values'][] = $content[$var_sql];
+			if(!$content[$var_sql]) {
+				$data['values'][] = VOID;
+			} else {
+				$data['values'][] = $content[$var_sql];
+			}
+			$data['dates'][] = date("n/j\r\nH:i",$content['DATE']);
 		}
-		$data['dates'][] = date("n/j\r\nH:i",$content['DATE']);
 		$cache_amount++;
 	}
 
